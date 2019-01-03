@@ -1194,19 +1194,9 @@ void process_commands()
     case 1: // G1
       if(Stopped == false) {
         get_coordinates(); // For X Y Z E F
-          #ifdef FWRETRACT
-            if(autoretract_enabled)
-            if( !(code_seen('X') || code_seen('Y') || code_seen('Z')) && code_seen('E')) {
-              float echange=destination[E_AXIS]-current_position[E_AXIS];
-              if((echange<-MIN_RETRACT && !retracted) || (echange>MIN_RETRACT && retracted)) { //move appears to be an attempt to retract or recover
-                  current_position[E_AXIS] = destination[E_AXIS]; //hide the slicer-generated retract/recover from calculations
-                  plan_set_e_position(current_position[E_AXIS]); //AND from the planner
-                  retract(!retracted);
-                  return;
-              }
-            }
-          #endif //FWRETRACT
         prepare_move();
+        st_synchronize();
+  SERIAL_ECHOLNPGM("Z_move_comp");
         //ClearToSend();
         return;
       }
@@ -1217,36 +1207,13 @@ void process_commands()
         //get_coordinates(); // For X Y Z E F
       destination[2] = 1.0+ (axis_relative_modes[2] || relative_mode)*current_position[2];
       seen[2]=true;
-          #ifdef FWRETRACT
-            if(autoretract_enabled)
-            if( !(code_seen('X') || code_seen('Y') || code_seen('Z')) && code_seen('E')) {
-              float echange= 1;
-              if((echange<-MIN_RETRACT && !retracted) || (echange>MIN_RETRACT && retracted)) { //move appears to be an attempt to retract or recover
-                  current_position[2] = destination[2]; //hide the slicer-generated retract/recover from calculations
-                  plan_set_e_position(current_position[2]); //AND from the planner
-                  retract(!retracted);
-                  return;
-              }
-            }
-          #endif //FWRETRACT
         prepare_move();
         delay(1000); // Wait a little before to switch off
       destination[2] = -1.0+ (axis_relative_modes[2] || relative_mode)*current_position[2];
       seen[2]=true;
-          #ifdef FWRETRACT
-            if(autoretract_enabled)
-            if( !(code_seen('X') || code_seen('Y') || code_seen('Z')) && code_seen('E')) {
-              float echange= 1;
-              if((echange<-MIN_RETRACT && !retracted) || (echange>MIN_RETRACT && retracted)) { //move appears to be an attempt to retract or recover
-                  current_position[2] = destination[2]; //hide the slicer-generated retract/recover from calculations
-                  plan_set_e_position(current_position[2]); //AND from the planner
-                  retract(!retracted);
-                  return;
-              }
-            }
-          #endif //FWRETRACT
         prepare_move();
         delay(1000); // Wait a little before to switch off
+  SERIAL_ECHOLNPGM("Z_move_comp");
         //ClearToSend();
         //return;
       }
@@ -1511,6 +1478,7 @@ void process_commands()
       feedmultiply = saved_feedmultiply;
       previous_millis_cmd = millis();
       endstops_hit_on_purpose();
+SERIAL_ECHOLNPGM("Z_move_comp");
       break;
 
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -3838,5 +3806,3 @@ bool setTargetedHotend(int code){
   }
   return false;
 }
-
-
