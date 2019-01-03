@@ -1,2 +1,2 @@
-# Kudo3D Bean firmware
-Kudo3D Bean Marlin firmware as downloaded from Kudo3D support page.
+# NanoBean firmware
+NanoBean Marlin firmware, modified to provide motion completion callbacks needed by nanoDLP, while remaining compatible to stock Kudo3D SD card software.
